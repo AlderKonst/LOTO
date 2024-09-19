@@ -1,46 +1,58 @@
 import random
 
-class Players:
-    def __init__(self, players):
-        self.players = players
+class Menu: # Создан меню для удобства работы с pytest
 
-    def add_players(self): # Код для добавления любого количества игроков
+    def start_menu(self):
         while True: # Предлагать ввод до получения правильного числа
             try:
-                menu = round(float(input('1. Игра между двумя людьми\n'
+                menu = int(input('1. Игра между двумя людьми\n'
                                  '2. Игра между двумя компами\n'
                                  '3. Игра между человеком и компом\n'
-                                 '4. Свой вариант\nВведите пункт меню: \n')))
+                                 '4. Игра с произвольным количеством игроков\n'
+                                 'Введите пункт меню: \n'))
                 if 1 <= menu <= 4:
-                    break
+                    return menu
                 else:
                     print("Введите число от 1 до 4.")
             except ValueError:
                 print("Что-то не то! Попробуйте ввести целое число от 1 до 4.")
-        if menu == 1:
-            self.players = [f'Моя карточка_1', f'Моя карточка_2']
-        elif menu == 2:
-            self.players = [f'Карточка компа_1', f'Карточка компа_2']
-        elif menu == 3:
-            self.players = ['Моя карточка', 'Карточка компа']
-        elif menu == 4:
-            while True: # Предлагать ввод до получения правильного числа
-                try:
-                    players_count = round(float(input('Введите количество игроков\n')))
-                    if players_count > 0:
-                        self.players = [input(f'Введите {i+1}-го игрока\n') for i in range(players_count)]
-                        break
-                    else:
-                        print('Количество игроков должно быть больше нуля')
-                except ValueError:
-                    print('Что-то не то! Попробуйте ещё раз ввести целое положительное число')
-        else:
-            self.players = ['Моя карточка', 'Карточка компа']
-            print('Введён некорректный номер, взяты значения по умолчанию')
 
-        return self.players
+class Players:
+
+    def __init__(self, menu=Menu().start_menu()):
+        self.menu = menu
+        self.two_players = [['Моя карточка_1', 'Моя карточка_2'],
+                         ['Карточка компа_1', 'Карточка компа_2'],
+                         ['Моя карточка', 'Карточка компа']]
+
+    def add_players(self): # Код для добавления любого количества игроков
+        if self.menu == 1:
+            return self.two_players[0]
+        elif self.menu == 2:
+            return self.two_players[1]
+        elif self.menu == 3:
+            return self.two_players[2]
+        elif self.menu == 4:
+            return self.multi_players() # Вызывается функция для произвольного количества игроков
+        else:
+            print('Произошла какая-то ошибка, взяты значения по умолчанию')
+            return self.two_players[2]
+
+    def multi_players(self): # Для добавления произвольного количества игроков
+        while True:
+            try:
+                players_count = int(input("Введите количество игроков: "))
+                if players_count > 0:
+                    players = [input(f"Введите имя {i + 1}-го игрока: ") for i in range(players_count)]
+                    break
+                else:
+                    print("Количество игроков должно быть больше нуля.")
+            except ValueError:
+                print("Некорректный ввод. Пожалуйста, введите целое положительное число.")
+        return players
 
 class Card:
+
     def create_card_list(self): # Создание двумерного списка с рандомными числами по возрастанию и пустотами
         rand_lst = random.sample(list(range(1, 91)), 27) # Создаем список из 27 случайных чисел от 1 до 90
         rand_lst = [sorted(rand_lst[:9]), sorted(rand_lst[9:18]), sorted(rand_lst[18:27])]
@@ -54,10 +66,12 @@ class Card:
         return card_lst
 
 class Barrels:
+
     def create_barrels_list(self):
         return list(range(1, 91)) # Создание списка бочонков с числами от 0 до 90
 
 class Interface:
+
     def __init__(self, players, card_lst, barrel_lst):
         self.players = players # Список игроков
         self.card_lst = card_lst # Словарь, где ключ - имя игрока, значение - его карточка
@@ -116,8 +130,9 @@ class Interface:
             if not self.check_winner(): # Проверяем, есть ли победитель
                 break
 class Game:
+
     def gaming(self):
-        players = Players([]).add_players()  # Создание списка игроков
+        players = Players().add_players()  # Создание списка игроков
         barrel_lst = Barrels().create_barrels_list()  # Создание списка бочонков
 
         users = {}  # Создание словаря, где будет ключ - имя игрока, значение - его карточка
