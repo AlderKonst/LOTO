@@ -1,64 +1,46 @@
 import random
 
-class Menu: # Создан меню для удобства работы с pytest
-
-    def input_menu(self): # Выбор пункта вынесен для удобства работы с pytest
-        return int(input('1. Игра между двумя людьми\n'
-                         '2. Игра между двумя компами\n'
-                         '3. Игра между человеком и компом\n'
-                         '4. Игра с произвольным количеством игроков\n'
-                         'Введите пункт меню: \n'))
-
-    def start_menu(self):
-        while True: # Предлагать ввод до получения правильного числа
-            try:
-                menu = self.input_menu() # Выбор пункта
-                if 1 <= menu <= 4:
-                    return menu
-                else:
-                    print("Введите число от 1 до 4.")
-            except ValueError:
-                print("Что-то не то! Попробуйте ввести целое число от 1 до 4.")
-
 class Players:
 
-    def __init__(self):
-        self.menu = Menu().start_menu()
-        self.two_players = [['Моя карточка_1', 'Моя карточка_2'],
-                         ['Карточка компа_1', 'Карточка компа_2'],
-                         ['Моя карточка', 'Карточка компа']]
+    def __init__(self, menu=None, two_players=[['Моя карточка_1', 'Моя карточка_2'],
+                                               ['Карточка компа_1', 'Карточка компа_2'],
+                                               ['Моя карточка', 'Карточка компа']]):
+        self.menu = menu or input('1. Игра между двумя людьми\n'
+                                  '2. Игра между двумя компами\n'
+                                  '3. Игра между человеком и компом\n'
+                                  '4. Игра с произвольным количеством игроков\n'
+                                  'Введите пункт меню: \n')
+        self.two_players = two_players
 
     def add_players(self): # Код для добавления любого количества игроков
-        if self.menu == 1:
-            return self.two_players[0]
-        elif self.menu == 2:
-            return self.two_players[1]
-        elif self.menu == 3:
-            return self.two_players[2]
-        elif self.menu == 4:
-            return self.multi_players() # Вызывается функция для произвольного количества игроков
+        start_menu = self.menu # Вызов главного меню
+        if start_menu == '1':
+            return self.two_players[0] # 'Моя карточка_1', 'Моя карточка_2'
+        elif start_menu == '2':
+            return self.two_players[1] # 'Карточка компа_1', 'Карточка компа_2'
+        elif start_menu == '3':
+            return self.two_players[2] # 'Моя карточка', 'Карточка компа'
+        elif start_menu == '4':
+            return MultiPlayers().multi_players() # Вызывается функция для произвольного количества игроков
         else:
-            print('Произошла какая-то ошибка, взяты значения по умолчанию')
-            return self.two_players[2]
+            print('Введено не число в пределах от 1 до 4, взяты карточки по умолчанию')
+            return self.two_players[2] # 'Моя карточка', 'Карточка компа'
 
-    def players_count_input(self): # Ввод количества игроков вынесен для удобства работы с pytest
-        return int(input("Введите количество игроков: "))
-
-    def multi_players_input(self, players_count): # Ввод имён игроков вынесен для удобства работы с pytest
-        return [input(f"Введите имя {i + 1}-го игрока: ") for i in range(players_count)]
+class MultiPlayers(Players):
+    def __init__(self, players_count=None, players=None):
+        self.players_count = players_count or input("Введите количество игроков: ")
+        self.players_count_num = int(self.players_count) if self.players_count.isdigit() else 0 # Для присвоения только чисел
+        self.players = players or [input(f"Введите имя {i + 1}-го игрока: ") for i in range(self.players_count_num)]
 
     def multi_players(self): # Для добавления произвольного количества игроков
-        while True:
-            try:
-                players_count = self.players_count_input() # Выбор количества игроков
-                if players_count > 0:
-                    players = self.multi_players_input(players_count) # Ввод имён игроков
-                    break
-                else:
-                    print("Количество игроков должно быть больше нуля.")
-            except ValueError:
-                print("Некорректный ввод. Пожалуйста, введите целое положительное число.")
-        return players
+        players_count_menu = self.players_count_num # Выбор количества игроков
+        if players_count_menu > 0: # Только если введено количество игроков больше нуля
+            players_names = self.players # Ввод имён игроков
+            return players_names # Возвращаем список игроков
+        else:
+            print("Введено число ниже нуля или произвольный символ, взяты карточки по умолчанию")
+            return ['Моя карточка', 'Карточка компа'] # Чтобы излишне не усложнять инициализатор
+
 
 class Card:
 
