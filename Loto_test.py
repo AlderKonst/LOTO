@@ -24,7 +24,13 @@ class TestMultiPlayers:
             assert players == ['Моя карточка', 'Карточка компа']
 
 class TestCard:
-    pass
+    def test_create_card_list(self): # Для проверки генерации карточек
+        card_lst = Card().create_card_list() # Cоздаём экземпляр метода класса
+        assert len(card_lst) == 3 # Три ли строчки в карточке?
+        for str_lst in card_lst: # Перебираем строчки (вложенные листы) в карточке
+            assert len(str_lst) == 9 # 9 ли элементов в строчке (во вложенных листах) карточки?
+            assert str_lst.count('') == 4 # В них есть ли 4 пустых строк?
+            assert len(set([str_lst[i] for i in range(len(str_lst))])) > 2 # Рандомно ли перебираются цифры в этих строчках?
 class TestBarrels:
     pass
 class TestInterface:
