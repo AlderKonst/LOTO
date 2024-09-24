@@ -94,8 +94,11 @@ class TestInterface:
         check_False = interface.check_cards(False, hand=True) # Передаём в созданный метод класса False
         assert check_True and check_False == True # Правильно ли их он потом обрабатывает?
 
-
-
+    def test_check_winner(self): # Проверка определения победителя (т.е. игрока с 15 зачеркнутыми числами)
+        count = Interface([], [], [], count_dict={'Игрок_1': 13, 'Игрок_2': 15}) # У второго игрока победа
+        assert count.check_winner() == [False, 'Игрок_1'] # Должен такой список вернуть
+        count = Interface([], [], [], count_dict={'Игрок_1': 13, 'Игрок_2': 14})  # Победы нет
+        assert count.check_winner() == [True] # Должен такой список вернуть
 
 class TestGame:
     pass
