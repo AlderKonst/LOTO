@@ -63,12 +63,12 @@ class Barrels:
 
 class Interface:
 
-    def __init__(self, players, card_lst, barrel_lst):
+    def __init__(self, players, card_lst, barrel_lst, count_dict=None):
         self.players = players # Список игроков
         self.card_lst = card_lst # Словарь, где ключ - имя игрока, значение - его карточка
         self.barrel_lst = barrel_lst # Список бочонков
         self.name_len_lim = 16 # Пределы длины имени игрока
-        self.count_dict = {i: 0 for i in self.players}
+        self.count_dict = count_dict or {i: 0 for i in self.players}
 
     def delete_barrel(self): # Удаляет элемент списка barrel_lst и возвращает удалённое
         return self.barrel_lst.pop(random.randint(0, len(self.barrel_lst) - 1))
@@ -117,8 +117,8 @@ class Interface:
         for name, num in self.count_dict.items():
             if num == 15: # Если игрок зачеркнул все числа
                 print('Победитель: ', name)
-                return False
-        return True
+                return [False, name]
+        return [True]
 
     def card_interface(self): # Основной игровой цикл
         while True:
@@ -126,10 +126,10 @@ class Interface:
             print(f'Новый бочонок: {new_barrel} (осталось {len(self.barrel_lst)})')
             self.print_cards() # Отображаем карточки
             yes_num = self.update_cards(new_barrel) # Обновляем карточки
-            if not self.check_cards(yes_num): # Проверяем, правильно ли зачеркнуто число
+            if not self.check_cards(yes_num, hand=True): # Проверяем, правильно ли зачеркнуто число
                 break
-
-            if not self.check_winner(): # Проверяем, есть ли победитель
+            winner = self.check_winner()
+            if not winner[0]: # Проверяем, есть ли победитель
                 break
 class Game:
 
