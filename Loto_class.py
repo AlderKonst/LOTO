@@ -67,17 +67,21 @@ class Interface:
         self.players = players # Список игроков
         self.card_lst = card_lst # Словарь, где ключ - имя игрока, значение - его карточка
         self.barrel_lst = barrel_lst # Список бочонков
+        self.name_len_lim = 16 # Пределы длины имени игрока
         self.count_dict = {i: 0 for i in self.players}
 
     def delete_barrel(self): # Удаляет элемент списка barrel_lst и возвращает удалённое
         return self.barrel_lst.pop(random.randint(0, len(self.barrel_lst) - 1))
 
+    def format_card(self, name, card_data): # Для форматирования данных карточки при выводе
+        header = '-' * (self.name_len_lim - int(0.5 * len(name))) + f" {name} " + '-' * (self.name_len_lim - int(0.5 * len(name))) # Начало карточки
+        rows = '\n'.join(['\t'.join(map(str, row)) for row in card_data]) # Тело карточки
+        footer = '-' * (2 * self.name_len_lim + 1) # Завершающие линии в карточке
+        return '\n'.join([header, rows, footer]) # Возвращаем карточку с соединёнными частями
+
     def print_cards(self):  # Для вывода карточек всех пользователей
-        for name, lst in self.card_lst.items():
-            # Отображение карточек в 3 строки кода во избежание трудночитаемой слишком длинной
-            print('-' * (16 - int(0.5 * len(name))), name, '-' * (16 - int(0.5 * len(name))))
-            print('\n'.join(['\t'.join(map(str, i)) for i in lst]))
-            print('-' * 34)
+        for name, card_data in self.card_lst.items(): # Отображение карточек в 3 строки кода
+            print(self.format_card(name, card_data)) # во избежание трудночитаемой слишком длинной
 
     def update_cards(self, new_barrel): # Обновляет карточки игроков после вытаскивания нового бочонка
         yes_num = False # Зачеркнуто ли число хотя бы у одного игрока
