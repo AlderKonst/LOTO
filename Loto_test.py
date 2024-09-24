@@ -1,4 +1,4 @@
-from Loto_class import Players, MultiPlayers, Card, Barrels, Interface
+from Loto_class import Players, MultiPlayers, Card, Barrels, Interface, Game # Импортируем тестируемые классы
 
 class TestPlayer:
     def test_menu(self): # Не число ли и вне пределов?
@@ -39,7 +39,7 @@ class TestBarrels:
         assert len(set(barrels_lst)) == len(barrels_lst) # Они разные?
 
 class TestInterface:
-    def test_interface(self): # Для проверки инициированных переменных
+    def test_interface(self): # Для проверки инициированных переменных (а нужно ли было его вообще так упорно проверять?)
         card_lst = Card().create_card_list() # Cоздаём экземпляр метода класса c картами
         barrels_lst = Barrels().create_barrels_list() # А теперь экземпляр метода класса с бочонками
         interface = Interface(['Игрок_1', 'Игрок_2'], card_lst, barrels_lst) # И объект предитогового класса
@@ -53,11 +53,40 @@ class TestInterface:
             assert str_lst.count('') == 4 # Есть ли в них 4 пустые строки?
             assert len(set([str_lst[i] for i in range(len(str_lst))])) > 2 # Рандомно ли перебираются цифры в этих строчках?
 
-        # Такая же ситуёвина
         assert len(barrels_lst) == 90 # В переданном листе 90 элементов (бочонков)?
         assert len(set(barrels_lst)) == len(barrels_lst) # Они разные?
 
+        assert interface.name_len_lim > 0 # Нужно хотя один символ для имени в выделенном в интерфейсе карточки
+
         assert len(interface.players) == len(interface.count_dict) # Совпадают ли количество игроков в словаре и списке?
         assert interface.players == [i for i, _ in interface.count_dict.items()] # Одинаковые ли имена игроков в списке и словаре?
+
+    def test_delete_barrel(self): # Правильно ли удаляет бочонок?
+        barrels_lst = Barrels().create_barrels_list() # Создаём экземпляр метода класса с бочонками
+        interface = Interface([], [], barrels_lst) # А теперь объект класса
+        del_barrel = [interface.delete_barrel() for _ in range(90)] # Удаляем по одиночке случайно все 90 бочонков
+        assert len(set(del_barrel)) == 90 # Их было 90 и были разными?
+
+    def test_format_card(self): # Проверка выводимой карточки
+        card_lst = Card().create_card_list() # Cоздаём экземпляр метода класса c картами
+        interface = Interface(['Игрок_1'], card_lst, []) # Cоздаём экземпляр класса
+        card_format = interface.format_card('Player', [[1, '-', 2], [3, '']])
+        assert len(card_format) == 77 # Количество полученных строк ожидаемо?
+
+    def test_print_cards(self): # Ради галочки, мокирование и прочее не проходили, не пишу тут...
+        print_cards = Interface([], [], []).print_cards()
+        assert print_cards == None # Есть ли что-либо в карточке?
+
+    def test_update_cards(self):# Обновляет ли карточки игроков после вытаскивания нового бочонка
+        card = Card() # Cоздаём экземпляр класса для карт
+        card_lst = {'Игрок_1': card.create_card_list(), 'Игрок_2': card.create_card_list()} # И словарь с картами
+        barrels_lst = Barrels().create_barrels_list() # А теперь экземпляр метода класса с бочонками
+        interface = Interface(['Игрок_1', 'Игрок_2'], card_lst, barrels_lst)
+        for new_barrel in range(90): # Проходим 90 бочонков
+            interface.update_cards(new_barrel) # Будем проверять каждый бочонок
+            for player, card in interface.card_lst.items(): # Проход по каждому игроку и карте
+                for row in card: # проход по каждому номеру в карте
+                    assert new_barrel not in row # Остался ли (зачёркнут ли) номер в итоге?
+
 class TestGame:
     pass
