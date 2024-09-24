@@ -21,7 +21,7 @@ class TestMultiPlayers:
     def test_multi_players_invalid_value(self): # Для проверки выбора значения по-умолчанию при вводе некоррентных данных
          for i in ['0', 'a']: # Проверяется эти два неверные значения количества игроков
             players = MultiPlayers(players_count=i).multi_players() # Создаём экземпляр модель класса Players
-            assert players == ['Моя карточка', 'Карточка компа']
+            assert players == ['Моя карточка', 'Карточка компа'] # Эти ли?
 
 class TestCard:
     def test_create_card_list(self): # Для проверки генерации карточек
@@ -87,6 +87,15 @@ class TestInterface:
             for player, card in interface.card_lst.items(): # Проход по каждому игроку и карте
                 for row in card: # проход по каждому номеру в карте
                     assert new_barrel not in row # Остался ли (зачёркнут ли) номер в итоге?
+
+    def test_check_cards(self): # Правильно ли возвращает True при автонаборе
+        interface = Interface([], [], []) # Создаём экземпляр класса
+        check_True = interface.check_cards(True, hand=True) # Передаём в созданный метод класса True
+        check_False = interface.check_cards(False, hand=True) # Передаём в созданный метод класса False
+        assert check_True and check_False == True # Правильно ли их он потом обрабатывает?
+
+
+
 
 class TestGame:
     pass
