@@ -100,10 +100,14 @@ class Interface:
             self.card_lst[name] = new_lst # Заменяем старую карточку на новую
         return yes_num
 
-    def check_cards(self, yes_num): # Проверяет, правильно ли игрок зачеркнул число
-        print('Есть' if yes_num else '') # Сообщаем, есть ли зачеркнутое число у кого-либо
+    def check_cards(self, yes_num, hand=False): # Проверяет, правильно ли игрок зачеркнул число
 
-        yes_no = input('Зачеркнуть цифру?\nДа - y, Нет - другие символы\n')
+        if hand == False: # Вручную выбирать?
+            print('Есть' if yes_num else '')  # Сообщаем, есть ли зачеркнутое число у кого-либо
+            yes_no = input('Зачеркнуть цифру?\nДа - y, Нет - другие символы\n') # Предлагаем зачёркивание
+        else: # Тогда автоматически
+            yes_no = 'y' if yes_num else 'n' # Присваиваем 'y' при зачёркивании и 'n' в обратном случае
+
         if (yes_no == 'y' and not yes_num) or (yes_no != 'y' and yes_num): # Проверяем на ошибку
             print('Игра завершена с проигрышем!')
             return False
