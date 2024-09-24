@@ -80,6 +80,9 @@ class Interface:
         return '\n'.join([header, rows, footer]) # Возвращаем карточку с соединёнными частями
 
     def print_cards(self):  # Для вывода карточек всех пользователей
+        if not self.card_lst: # Лишь чтобы было, иначе нафига функцию format_card создавал
+            print("Список карточек пуст")
+            return # Есть карточка или нет?
         for name, card_data in self.card_lst.items(): # Отображение карточек в 3 строки кода
             print(self.format_card(name, card_data)) # во избежание трудночитаемой слишком длинной
 
