@@ -126,7 +126,8 @@ class Interface:
             print(f'Новый бочонок: {new_barrel} (осталось {len(self.barrel_lst)})')
             self.print_cards() # Отображаем карточки
             yes_num = self.update_cards(new_barrel) # Обновляем карточки
-            if not self.check_cards(yes_num, hand=True): # Проверяем, правильно ли зачеркнуто число
+            if not self.check_cards(yes_num, # Проверяем, правильно ли зачеркнуто число
+                                    hand=False): # True - автоматически зачёркивает, False - вручную
                 break
             winner = self.check_winner()
             if not winner[0]: # Проверяем, есть ли победитель
@@ -136,14 +137,9 @@ class Game: # Бесмысленно наследовать, иначе слиш
     def gaming(self): # Итоговая функция игры
         players = Players().add_players() # Создание списка игроков
         barrel_lst = Barrels().create_barrels_list() # Создание списка бочонков
-
-        users = {} # Создание словаря, где будет ключ - имя игрока, значение - его карточка
-        for player in players: # Создаем новую колоду для каждого игрока
-            card_lst = Card().create_card_list() # Создаем новую колоду
-            users[player] = card_lst  # Для каждого игрока
-
+        users = {player: Card().create_card_list() for player in players} # Создание словаря: ключ - имя игрока, значение - его карточка
         game = Interface(players, users, barrel_lst) # Создание экземпляра интерфейса игры, процессов
-        game.card_interface()  # Запуск игрового процесса
+        return game.card_interface()  # Запуск игрового процесса
 
 if __name__ == '__main__': # Только здесь
     gaming = Game() # Экземпляр игры
