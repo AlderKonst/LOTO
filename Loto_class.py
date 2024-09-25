@@ -127,7 +127,7 @@ class Interface:
             self.print_cards() # Отображаем карточки
             yes_num = self.update_cards(new_barrel) # Обновляем карточки
             if not self.check_cards(yes_num, # Проверяем, правильно ли зачеркнуто число
-                                    hand=False): # True - автоматически зачёркивает, False - вручную
+                                    hand=True): # True - автоматически зачёркивает, False - вручную
                 break
             winner = self.check_winner()
             if not winner[0]: # Проверяем, есть ли победитель
