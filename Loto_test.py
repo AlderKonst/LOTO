@@ -38,7 +38,11 @@ class TestBarrels:
         assert len(barrels_lst) == 90 # В листе 90 элементов (бочонков)?
         assert len(set(barrels_lst)) == len(barrels_lst) # Они разные?
 
+# Приведённый в занятии def setup() должена была избавлять от дублирования кода, но не работает!!! В итоге код совсем разросся
 class TestInterface:
+    def setup(self): # Не работает
+        print("Выполняюсь до теста") # Не работает
+
     def test_interface(self): # Для проверки инициированных переменных (а нужно ли было его вообще так упорно проверять?)
         card_lst = Card().create_card_list() # Cоздаём экземпляр метода класса c картами
         barrels_lst = Barrels().create_barrels_list() # А теперь экземпляр метода класса с бочонками
@@ -96,9 +100,29 @@ class TestInterface:
 
     def test_check_winner(self): # Проверка определения победителя (т.е. игрока с 15 зачеркнутыми числами)
         count = Interface([], [], [], count_dict={'Игрок_1': 13, 'Игрок_2': 15}) # У второго игрока победа
-        assert count.check_winner() == [False, 'Игрок_1'] # Должен такой список вернуть
+        assert count.check_winner() == [False, 'Игрок_2'] # Должен такой список вернуть
         count = Interface([], [], [], count_dict={'Игрок_1': 13, 'Игрок_2': 14})  # Победы нет
         assert count.check_winner() == [True] # Должен такой список вернуть
+
+    def test_card_interface_mark(self): # Зачёркиваются ли числа?
+        players = ['Игрок1', 'Игрок2'] # Создаём список с игроками
+        card_lst = {player: Card().create_card_list() for player in players} # А также словарь с картами для игроков
+        barrel_lst = Barrels().create_barrels_list() # Ещё и списка вычёркиваемых номеров
+        game = Interface(players, card_lst, barrel_lst) # Создаём экземпляр с нашим классом
+        for _ in range(len(barrel_lst)): # Проходим по всем бочонкам
+            new_barrel = game.delete_barrel() # Удаляем один бочонок
+            game.update_cards(new_barrel) # И теперь обновляем карту
+            game.check_cards(True, hand=True) # Автоматически зачеркиваем
+        for player, card in game.card_lst.items(): # Проверяем, что карточки игроков были обновлены
+            assert any('-' in row for row in card) # Есть ли зачеркнутые числа в карточках?
+
+    def test_card_interface_winner(self): # Определяет ли победителей?
+        players = ['Игрок_1', 'Игрок_2'] # Создаём список с игроками
+        card_lst = {player: Card().create_card_list() for player in players} # А также словарь с картами для игроков
+        barrel_lst = Barrels().create_barrels_list() # Ещё и списка вычёркиваемых номеров
+        game = Interface(players, card_lst, barrel_lst) # Создаём экземпляр с нашим классом
+        game.card_interface() # Запускаем процессы интерфейса
+        assert game.check_winner()[1] == 'Игрок1' or 'Игрок_2' # Выявила ли какого-либо победителя?
 
 class TestGame:
     pass
