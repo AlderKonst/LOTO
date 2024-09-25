@@ -38,9 +38,9 @@ class TestBarrels:
         assert len(barrels_lst) == 90 # В листе 90 элементов (бочонков)?
         assert len(set(barrels_lst)) == len(barrels_lst) # Они разные?
 
-# Приведённый в занятии def setup() должена была избавлять от дублирования кода, но не работает!!! В итоге код совсем разросся
+# Приведённая def setup() в занятии должна была помочь от дублирований, но не работает!!! В итоге код совсем разросся
 class TestInterface:
-    def setup(self): # Не работает
+    def setup(self): # Не работает даже при запуске с pytest -s
         print("Выполняюсь до теста") # Не работает
 
     def test_interface(self): # Для проверки инициированных переменных (а нужно ли было его вообще так упорно проверять?)
@@ -105,7 +105,7 @@ class TestInterface:
         assert count.check_winner() == [True] # Должен такой список вернуть
 
     def test_card_interface_mark(self): # Зачёркиваются ли числа?
-        players = ['Игрок1', 'Игрок2'] # Создаём список с игроками
+        players = ['Игрок_1', 'Игрок_2'] # Создаём список с игроками
         card_lst = {player: Card().create_card_list() for player in players} # А также словарь с картами для игроков
         barrel_lst = Barrels().create_barrels_list() # Ещё и списка вычёркиваемых номеров
         game = Interface(players, card_lst, barrel_lst) # Создаём экземпляр с нашим классом
@@ -124,5 +124,30 @@ class TestInterface:
         game.card_interface() # Запускаем процессы интерфейса
         assert game.check_winner()[1] == 'Игрок1' or 'Игрок_2' # Выявила ли какого-либо победителя?
 
-class TestGame:
-    pass
+class TestGame: # Сборочный, поэтому представил лишь проверку элементов кода, по сути из различных классов, эх
+
+    def test_gaming_add_2_players(self): # Проверяет список c пунктами главного меню с их названиями (как в TestPlayer)
+        for i in ['1', '2', '3']: # Проверяется эти три предустановленные пункты
+            players = Players(menu=i) # Создаём экземпляр класса Players
+            assert players.add_players() == players.two_players[int(i)-1] # Сверяем принадлежность пунктов меню к их именам
+
+    def test_gaming_create_cards(self): # Как хорошо создаются карты?
+        card = Card() # Создаём экземпляр класса для карт
+        card_list = card.create_card_list() # Создаём экземпляр модели с функцией создания карт
+        assert len(set(num for row in card_list for num in row if num)) == 15 # Проверка количества чисел
+        assert all(1 <= num <= 90 for row in card_list for num in row if num) # Числа в пределах от 0 до 91?
+        assert len(card_list) == 3 # Три строки в двумерном списке?
+        assert all(len(row) == 9 for row in card_list) # Девять столбцов в двумерном списке?
+        for row in card_list: # Проходим по каждой строке списка
+            assert sum(num == '' for num in row) == 4 # Пустых ячеек в каждой строке 4?
+
+    def test__gaming_del_barrel(self):
+        barrel_list = Barrels().create_barrels_list()
+        interface = Interface([], [], barrel_list)
+
+        initial_length = len(barrel_list)
+        deleted_barrel = interface.delete_barrel()
+
+        assert deleted_barrel in range(1, 91)  # Проверяем, что удаленный бочонок в диапазоне
+        assert len(barrel_list) == initial_length - 1  # Проверяем, что длина списка уменьшилась
+        assert deleted_barrel not in barrel_list  # Проверяем, что бочонок действительно удален
