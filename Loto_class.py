@@ -131,20 +131,20 @@ class Interface:
             winner = self.check_winner()
             if not winner[0]: # Проверяем, есть ли победитель
                 break
-class Game:
+class Game: # Бесмысленно наследовать, иначе слишком тут всё запутается
 
-    def gaming(self):
-        players = Players().add_players()  # Создание списка игроков
-        barrel_lst = Barrels().create_barrels_list()  # Создание списка бочонков
+    def gaming(self): # Итоговая функция игры
+        players = Players().add_players() # Создание списка игроков
+        barrel_lst = Barrels().create_barrels_list() # Создание списка бочонков
 
-        users = {}  # Создание словаря, где будет ключ - имя игрока, значение - его карточка
-        for player in players:  # Создаем новую колоду для каждого игрока
-            card_lst = Card().create_card_list()  # Создаем новую колоду
+        users = {} # Создание словаря, где будет ключ - имя игрока, значение - его карточка
+        for player in players: # Создаем новую колоду для каждого игрока
+            card_lst = Card().create_card_list() # Создаем новую колоду
             users[player] = card_lst  # Для каждого игрока
 
-        game = Interface(players, users, barrel_lst)  # Создание экземпляра интерфейса игры, процессов
+        game = Interface(players, users, barrel_lst) # Создание экземпляра интерфейса игры, процессов
         game.card_interface()  # Запуск игрового процесса
 
-if __name__ == '__main__':
+if __name__ == '__main__': # Только здесь
     gaming = Game() # Экземпляр игры
     gaming.gaming() # Запуск!
