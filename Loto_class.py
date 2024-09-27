@@ -1,4 +1,4 @@
-import random
+import random # Теперь в каждом классе есть хотя бы один свой переопределённый магический метод
 
 class Players:
 
@@ -44,7 +44,7 @@ class MultiPlayers(Players):
 
 class Card:
 
-    def create_card_list(self): # Создание двумерного списка с рандомными числами по возрастанию и пустотами
+    def __call__(self): # Создание двумерного списка с рандомными числами по возрастанию и пустотами (возможно тоже нужно было превратить в init)
         rand_lst = random.sample(list(range(1, 91)), 27) # Создаем список из 27 случайных чисел от 1 до 90
         rand_lst = [sorted(rand_lst[:9]), sorted(rand_lst[9:18]), sorted(rand_lst[18:27])]
         card_lst = [] # Создаем пустой список для итоговой карточки
@@ -56,10 +56,9 @@ class Card:
 
         return card_lst
 
-class Barrels:
-
-    def create_barrels_list(self):
-        return list(range(1, 91)) # Создание списка бочонков с числами от 0 до 90
+class Barrels: # До сих не уверен, нужно ли было отдельный класс создавать
+    def __init__(self): # Функцию превратил в иницилизатор
+        self.barrel_lst = list(range(1, 91)) # Создание списка бочонков с числами от 0 до 90
 
 class Interface:
 
@@ -134,13 +133,13 @@ class Interface:
                 break
 class Game: # Бесмысленно наследовать, иначе слишком тут всё запутается
 
-    def gaming(self): # Итоговая функция игры
+    def __call__(self): # Итоговая функция игры превратил в магическую в рамках соответствующего занятия
         players = Players().add_players() # Создание списка игроков
-        barrel_lst = Barrels().create_barrels_list() # Создание списка бочонков
-        users = {player: Card().create_card_list() for player in players} # Создание словаря: ключ - имя игрока, значение - его карточка
+        barrel_lst = Barrels().barrel_lst # Создание списка бочонков
+        users = {player: Card()() for player in players} # Создание словаря: ключ - имя игрока, значение - его карточка
         game = Interface(players, users, barrel_lst) # Создание экземпляра интерфейса игры, процессов
         return game.card_interface()  # Запуск игрового процесса
 
 if __name__ == '__main__': # Только здесь
     gaming = Game() # Экземпляр игры
-    gaming.gaming() # Запуск!
+    gaming() # Запуск!
