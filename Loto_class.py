@@ -1,4 +1,4 @@
-import random
+import random # Теперь в каждом классе есть хотя бы один свой переопределённый магический метод
 
 class Players:
 
@@ -11,7 +11,6 @@ class Players:
                                   '4. Игра с произвольным количеством игроков\n'
                                   'Введите пункт меню: \n')
         self.two_players = two_players
-
     def add_players(self): # Код для добавления любого количества игроков
         start_menu = self.menu # Вызов главного меню
         if start_menu == '1':
@@ -25,6 +24,15 @@ class Players:
         else:
             print('Введено не число в пределах от 1 до 4, взяты карточки по умолчанию')
             return self.two_players[2] # 'Моя карточка', 'Карточка компа'
+
+    def __str__(self): # Узнаём класс
+        return f"Это класс {self.__class__.__name__}"
+
+    def __eq__(self, other): # Переопределение магического метода сравнения '=='
+        return self.menu == other.menu and self.two_players == other.two_players
+
+    def __ne__(self, other): # Переопределение магического метода сравнения '!='
+        return not self == other
 
 class MultiPlayers(Players):
     def __init__(self, players_count=None, players=None):
@@ -41,10 +49,20 @@ class MultiPlayers(Players):
             print("Введено число ниже нуля или произвольный символ, взяты карточки по умолчанию")
             return ['Моя карточка', 'Карточка компа'] # Чтобы излишне не усложнять инициализатор
 
+    def __str__(self): # Узнаём класс
+        return f"Это класс {self.__class__.__name__}"
+
+    def __eq__(self, other): # Переопределение магического метода сравнения '=='
+        return self.players_count == other.players_count and self.players == other.players
+
+    def __ne__(self, other):# Переопределение магического метода сравнения '!='
+        return not self == other
 
 class Card:
+    def __init__(self, magic='a'):
+        self.magic = magic
 
-    def create_card_list(self): # Создание двумерного списка с рандомными числами по возрастанию и пустотами
+    def __call__(self): # Создание двумерного списка с рандомными числами по возрастанию и пустотами (возможно тоже нужно было превратить в init)
         rand_lst = random.sample(list(range(1, 91)), 27) # Создаем список из 27 случайных чисел от 1 до 90
         rand_lst = [sorted(rand_lst[:9]), sorted(rand_lst[9:18]), sorted(rand_lst[18:27])]
         card_lst = [] # Создаем пустой список для итоговой карточки
@@ -56,10 +74,29 @@ class Card:
 
         return card_lst
 
-class Barrels:
+    def __str__(self): # Узнаём класс
+        return f"Это класс {self.__class__.__name__}"
 
-    def create_barrels_list(self):
-        return list(range(1, 91)) # Создание списка бочонков с числами от 0 до 90
+    def __eq__(self, other): # Переопределение магического метода сравнения '=='
+        return self.magic == other.magic
+
+    def __ne__(self, other): # Переопределение магического метода сравнения '!='
+        return not self == other
+
+
+class Barrels: # До сих не уверен, нужно ли было отдельный класс создавать
+    def __init__(self, magic='a'): # Функцию превратил в иницилизатор
+        self.barrel_lst = list(range(1, 91)) # Создание списка бочонков с числами от 0 до 90
+        self.magic = magic
+
+    def __str__(self): # Узнаём класс
+        return f"Это класс {self.__class__.__name__}"
+
+    def __eq__(self, other): # Переопределение магического метода сравнения '=='
+        return self.magic == other.magic
+
+    def __ne__(self, other): # Переопределение магического метода сравнения '!='
+        return not self == other
 
 class Interface:
 
@@ -132,15 +169,37 @@ class Interface:
             winner = self.check_winner()
             if not winner[0]: # Проверяем, есть ли победитель
                 break
+
+    def __str__(self): # Узнаём класс
+        return f"Это класс {self.__class__.__name__}"
+
+    def __eq__(self, other): # Переопределение магического метода сравнения '=='
+        return self.players == other.players and self.card_lst == other.card_lst and self.barrel_lst == other.barrel_lst
+
+    def __ne__(self, other): # Переопределение магического метода сравнения '!='
+        return not self == other
+
 class Game: # Бесмысленно наследовать, иначе слишком тут всё запутается
 
-    def gaming(self): # Итоговая функция игры
+    def __init__(self, magic='a'):
+        self.magic = magic
+
+    def __call__(self): # Итоговая функция игры превратил в магическую в рамках соответствующего занятия
         players = Players().add_players() # Создание списка игроков
-        barrel_lst = Barrels().create_barrels_list() # Создание списка бочонков
-        users = {player: Card().create_card_list() for player in players} # Создание словаря: ключ - имя игрока, значение - его карточка
+        barrel_lst = Barrels().barrel_lst # Создание списка бочонков
+        users = {player: Card()() for player in players} # Создание словаря: ключ - имя игрока, значение - его карточка
         game = Interface(players, users, barrel_lst) # Создание экземпляра интерфейса игры, процессов
         return game.card_interface()  # Запуск игрового процесса
 
+    def __str__(self): # Узнаём класс
+        return f"Это класс {self.__class__.__name__}"
+
+    def __eq__(self, other): # Переопределение магического метода сравнения '=='
+        return self.magic == other.magic
+
+    def __ne__(self, other): # Переопределение магического метода сравнения '!='
+        return not self == other
+
 if __name__ == '__main__': # Только здесь
     gaming = Game() # Экземпляр игры
-    gaming.gaming() # Запуск!
+    gaming() # Запуск!
