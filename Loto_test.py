@@ -11,6 +11,13 @@ class TestPlayer:
             players = Players(menu=i) # Создаём экземпляр класса Players
             assert players.add_players() == players.two_players[int(i)-1] # Сверяем принадлежность пунктов меню к их именам
 
+    def test_players_magic(self): # Корректно ли переопределённые магические методы сравнения работают?
+        x = Players(menu='1', two_players='a')
+        y = Players(menu='1', two_players='a')
+        z = Players(menu='2', two_players='b')
+        assert x == y
+        assert x != z
+
 class TestMultiPlayers:
 
     def test_multi_players_zero_more(self): # Для проверки игроков с количеством больше нуля при выборе 4-го пункта
@@ -23,6 +30,13 @@ class TestMultiPlayers:
             players = MultiPlayers(players_count=i).multi_players() # Создаём экземпляр модель класса Players
             assert players == ['Моя карточка', 'Карточка компа'] # Эти ли?
 
+    def test_multi_players_magic(self): # Корректно ли переопределённые магические методы сравнения работают?
+        x = MultiPlayers(players_count='1', players='a')
+        y = MultiPlayers(players_count='1', players='a')
+        z = MultiPlayers(players_count='2', players='b')
+        assert x == y
+        assert x != z
+
 class TestCard:
     def test_create_card_list(self): # Для проверки генерации карточек
         card_lst = Card()() # Cоздаём экземпляр метода класса
@@ -32,11 +46,25 @@ class TestCard:
             assert str_lst.count('') == 4 # Есть ли в них 4 пустые строки?
             assert len(set([str_lst[i] for i in range(len(str_lst))])) > 2 # Рандомно ли перебираются цифры в этих строчках?
 
+    def test_card_magic(self): # Корректно ли переопределённые магические методы сравнения работают?
+        x = Card(magic='a')
+        y = Card(magic='a')
+        z = Card(magic='b')
+        assert x == y
+        assert x != z
+
 class TestBarrels:
     def test_create_barrels_list(self): # Для проверки создания списка с 90 бочонками
         barrels_lst = Barrels().barrel_lst # Cоздаём экземпляр метода класса
         assert len(barrels_lst) == 90 # В листе 90 элементов (бочонков)?
         assert len(set(barrels_lst)) == len(barrels_lst) # Они разные?
+
+    def test_barrels_magic(self): # Корректно ли переопределённые магические методы сравнения работают?
+        x = Barrels(magic='a')
+        y = Barrels(magic='a')
+        z = Barrels(magic='b')
+        assert x == y
+        assert x != z
 
 # Приведённая def setup() в занятии должна была помочь от дублирований, но не работает!!! В итоге код совсем разросся
 class TestInterface:
@@ -124,6 +152,13 @@ class TestInterface:
         game.card_interface() # Запускаем процессы интерфейса
         assert game.check_winner()[1] == 'Игрок1' or 'Игрок_2' # Выявила ли какого-либо победителя?
 
+    def test_interface_magic(self): # Корректно ли переопределённые магические методы сравнения работают?
+        x = Interface(['Игрок'], {}, [])
+        y = Interface(['Игрок'], {}, [])
+        z = Interface(['Игрокер'], {}, [])
+        assert x == y
+        assert x != z
+
 class TestGame: # Сборочный, его вообще непонятно как тестировать
 
     def test_gaming_add_2_players(self): # Проверяет список c пунктами главного меню с их названиями (как в TestPlayer)
@@ -140,13 +175,20 @@ class TestGame: # Сборочный, его вообще непонятно к�
         for row in card_list: # Проходим по каждой строке списка
             assert sum(num == '' for num in row) == 4 # Пустых ячеек в каждой строке 4?
 
-    def test__gaming_del_barrel(self):
-        barrel_list = Barrels().barrel_lst
-        interface = Interface([], [], barrel_list)
+    def test_gaming_del_barrel(self): # Проверка удаления бочонков
+        barrel_list = Barrels().barrel_lst # Cоздаём список вычёркиваемых номеров
+        interface = Interface([], [], barrel_list) # И экземпляр с интерфейсом
 
-        initial_length = len(barrel_list)
-        deleted_barrel = interface.delete_barrel()
+        initial_length = len(barrel_list) # Берём количество бочонков
+        deleted_barrel = interface.delete_barrel() # Проводим удаление бочонка
 
         assert deleted_barrel in range(1, 91)  # Проверяем, что удаленный бочонок в диапазоне
         assert len(barrel_list) == initial_length - 1  # Проверяем, что длина списка уменьшилась
         assert deleted_barrel not in barrel_list  # Проверяем, что бочонок действительно удален
+
+    def test_game_magic(self): # Корректно ли переопределённые магические методы сравнения работают?
+        x = Game(magic='a')
+        y = Game(magic='a')
+        z = Game(magic='b')
+        assert x == y
+        assert x != z
